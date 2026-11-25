@@ -1,0 +1,99 @@
+[server]
+host: 0.0.0.0
+port: 7125
+klippy_uds_address: /home/owner/printer_data/comms/klippy.sock
+
+[file_manager]
+# post processing for object cancel. Not recommended for low resource SBCs such as a Pi Zero. Default False
+enable_object_processing: True
+
+[authorization]
+trusted_clients:
+    192.168.0.0/16
+    10.0.0.0/8
+    127.0.0.0/8
+    169.254.0.0/16
+    172.16.0.0/12
+    192.168.0.0/16
+    FC00::/7
+    FE80::/10
+    ::1/128
+cors_domains:
+    *.lan
+    *.local
+    *://localhost
+    *://localhost:*
+    *://my.mainsail.xyz
+    *://app.fluidd.xyz
+
+# enables partial support of Octoprint API
+[octoprint_compat]
+
+# enables moonraker to track and store print history.
+[history]
+
+# this enables moonraker announcements for mainsail
+[announcements]
+subscriptions:
+    mainsail
+    
+[update_manager]
+channel: dev
+refresh_interval: 168
+
+[update_manager mainsail]
+path: /home/owner/mainsail
+repo: mainsail-crew/mainsail
+channel: stable
+type: web
+persistent_files:
+    config.json
+
+[update_manager mainsail-config]
+managed_services: klipper
+origin: https://github.com/mainsail-crew/mainsail-config.git
+path: /home/owner/mainsail-config
+primary_branch: master
+type: git_repo
+[update_manager crowsnest]
+type: git_repo
+path: ~/crowsnest
+origin: https://github.com/mainsail-crew/crowsnest.git
+primary_branch: v5
+managed_services: crowsnest
+system_dependencies: system-dependencies.json
+virtualenv: ~/crowsnest-env
+requirements: requirements.txt
+[update_manager klipper-backup]
+type: git_repo
+path: ~/klipper-backup
+origin: https://github.com/Staubgeborener/klipper-backup.git
+managed_services: moonraker
+primary_branch: main
+
+[spoolman]
+server: http://192.168.1.247:7912
+# URL to the Spoolman instance. This parameter must be provided.
+sync_rate: 5
+# The interval, in seconds, between sync requests with the
+# Spoolman server.  The default is 5.
+
+[notifier print_start]
+url: ntfy://ntfy.bodedehome.com/Proplus_Alert
+events: started
+body: Your printer started printing '{event_args[1].filename}'
+
+[notifier print_complete]
+url: ntfy://ntfy.bodedehome.com/Proplus_Alert
+events: complete
+body: Your printer completed printing '{event_args[1].filename}'
+
+[notifier print_error]
+url: ntfy://ntfy.bodedehome.com/Proplus_Alert
+events: error
+body: {event_args[1].message}
+
+[notifier my_ntfy_notifier]
+url: ntfy://ntfy.bodedehome.com/Proplus_Alert
+events: gcode
+body: {event_message}
